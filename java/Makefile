@@ -1,3 +1,5 @@
+#deprecated
+
 all: Atomo.java CStamp.java Gerador.java
 	javac Pair.java
 	javac BitArray.java

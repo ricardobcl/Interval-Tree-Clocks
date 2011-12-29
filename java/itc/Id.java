@@ -1,310 +1,302 @@
 package itc;
 
-import helpers.Pair;
+import util.BitArray;
 
+public class Id {
 
-public class Id{
+	protected boolean isLeaf;
+	private int value;
+	private Id left;
+	private Id right;
 
-	private int tipo;
-	private int n;
-	private Id i1;
-	private Id i2;
-	
-	// tipo = 1 : i1 = i2 = null ; n = val
-	// tipo = 2 : n = null ; i1 & i2 are Id
-	
-	public Id(){
-		this.n = 1;
-		this.tipo = 1;
-		this.i1 = null;
-		this.i2 = null;
+	public Id() {
+		this.value = 1;
+		this.isLeaf = true;
+		this.left = null;
+		this.right = null;
 	}
-	
-	public Id(int val){
-		this.n = val;
-		this.tipo = 1;
-		this.i1 = null;
-		this.i2 = null;
+
+	public Id(int val) {
+		this.value = val;
+		this.isLeaf = true;
+		this.left = null;
+		this.right = null;
 	}
-	
-	public Id(Id i){
-		this.n = i.getN();
-		this.tipo = i.getTipo();
-		this.i1 = new Id();
-		this.i1 = i.getId1();
-		this.i2 = new Id();
-		this.i2 = i.getId2();
+
+	public Id(Id i) {
+		this.isLeaf = i.isLeaf;
+		this.value = i.getValue();
+		Id el = i.getLeft();
+		Id er = i.getRight();
+		this.left = (el==null) ? null : el.clone();
+		this.right = (er==null) ? null : er.clone();
 	}
-	
-	// Metodos de instancia
-	public Id split(){ // split shall return the right hand id of the result, while making himself the left hand id
-		Id i2 = new Id();
-		
-		if (this.tipo == 1 && this.n == 0){ // id = 0
-			this.tipo = 1;
-			this.n = 0;
-			
-			i2.setTipo(1);
-			i2.setN(0);
-		}else if (this.tipo == 1 && this.n == 1){ // id = 1
-			this.tipo = 2;
-			this.n = 0;
-			this.i1 = new Id(1);
-			this.i2 = new Id(0);
-			
-			i2.setTipo(2);
-			i2.setId1(new Id(0));
-			i2.setId2(new Id(1));
-		}else{
-			if(this.tipo == 2 && (this.i1.getTipo() == 1 && this.i1.getN() == 0) && (this.i2.getTipo() == 2 || this.i2.getN() == 1)){ // id = (0, i)
-				this.tipo = 2;
-				this.n = 0;
-				this.i1 = new Id(0);
-				
-				i2.setTipo(2);
-				i2.setId1(new Id(0));
-				i2.setId2(this.i2.split());
-			}else if(this.tipo == 2 && (this.i1.getTipo() == 2 || this.i1.getN() == 1) && (this.i2.getTipo() == 1 && this.i2.getN() == 0)){ // id = (i, 0)
-				this.tipo = 2;
-				this.n = 0;
-				this.i2 = new Id(0);
-				
-				i2.setTipo(2); 
-				i2.setId1(this.i1.split());
-				i2.setId2(new Id(0));
-			}else if(this.tipo == 2 && (this.i1.getTipo() == 2 || this.i1.getN() == 1) && (this.i2.getTipo() == 2 || this.i2.getN() == 1)){ // id = (i1, i2)
-				i2.setTipo(2); 
-				i2.setId2(this.i2);
-				i2.setId1(new Id(0));
-				
-				this.tipo = 2;
-				this.n = 0;
-				// this.i1 = this.i1;
-				this.i2 = new Id(0);
-			}else{
-				System.out.println("Bug..." + this.tostring());
-			}
-		}
- 		return i2;
-	}
-	
-	public Pair<Id> split2(){
+
+	public Id[] split() {
 		Id i1 = new Id();
 		Id i2 = new Id();
-		
-		if (this.tipo == 1 && this.n == 0){ // id = 0
-			i1.setTipo(1);
-			i1.setN(0);
-			
-			i2.setTipo(1);
-			i2.setN(0);
-		}else if (this.tipo == 1 && this.n == 1){ // id = 1
-			i1.setTipo(2);
-			i1.setN(0);
-			i1.setId1(new Id(1));
-			i1.setId2(new Id(0));
-			
-			i2.setTipo(2);
-			i2.setN(0);
-			i2.setId1(new Id(0));
-			i2.setId2(new Id(1));
-		}else{
-			if(this.tipo == 2 && (this.i1.getTipo() == 1 && this.i1.getN() == 0) && (this.i2.getTipo() == 2 || this.i2.getN() == 1)){ // id = (0, i)				
-				Pair<Id> ip = this.i2.split2();
-				
-				i1.setTipo(2);
-				i1.setN(0);
-				i1.setId1(new Id(0));
-				i1.setId2((Id) ip.getEa());
-				
-				i2.setTipo(2);
-				i2.setN(0);
-				i2.setId1(new Id(0));
-				i2.setId2((Id) ip.getEb());
-			}else if(this.tipo == 2 && (this.i1.getTipo() == 2 || this.i1.getN() == 1) && (this.i2.getTipo() == 1 && this.i2.getN() == 0)){ // id = (i, 0)
-				Pair<Id> ip = this.i1.split2();
-				
-				i1.setTipo(2);
-				i1.setN(0);
-				i1.setId1((Id) ip.getEa());
-				i1.setId2(new Id(0));
-				
-				i2.setTipo(2);
-				i2.setN(0);
-				i2.setId1((Id) ip.getEb());
-				i2.setId2(new Id(0));
-			}else if(this.tipo == 2 && (this.i1.getTipo() == 2 || this.i1.getN() == 1) && (this.i2.getTipo() == 2 || this.i2.getN() == 1)){ // id = (i1, i2)				
-				i1.setTipo(2);
-				i1.setN(0);
-				i1.setId1(this.i1.clone());
-				i1.setId2(new Id(0));
-				
-				i2.setTipo(2);
-				i2.setN(0);
-				i2.setId1(new Id(0));
-				i2.setId2(this.i2.clone());
-			}else{
-				System.out.println("Bug..." + this.tostring());
+
+		if (this.isLeaf && this.value == 0) { // id = 0
+			System.out.println("ID = 0??? FUCK");
+			i1.setAsLeaf();
+			i1.setValue(0);
+
+			i2.setAsLeaf();
+			i2.setValue(0);
+		} else if (this.isLeaf && this.value == 1) { // id = 1
+			i1.setAsNode();
+			i1.setValue(0);
+			i1.setLeft(new Id(1));
+			i1.setRight(new Id(0));
+
+			i2.setAsNode();
+			i2.setValue(0);
+			i2.setLeft(new Id(0));
+			i2.setRight(new Id(1));
+		} else {
+			if (this.isLeaf == false && (this.left.isLeaf && this.left.getValue() == 0) && (this.right.isLeaf == false || this.right.getValue() == 1)) { // id = (0, i)
+				Id[] ip = this.right.split();
+
+				i1.setAsNode();
+				i1.setValue(0);
+				i1.setLeft(new Id(0));
+				i1.setRight(ip[0]);
+
+				i2.setAsNode();
+				i2.setValue(0);
+				i2.setLeft(new Id(0));
+				i2.setRight(ip[1]);
+			} else if (this.isLeaf == false && (this.left.isLeaf == false || this.left.getValue() == 1) && (this.right.isLeaf && this.right.getValue() == 0)) { // id = (i, 0)
+				Id[] ip = this.left.split();
+
+				i1.setAsNode();
+				i1.setValue(0);
+				i1.setLeft(ip[0]);
+				i1.setRight(new Id(0));
+
+				i2.setAsNode();
+				i2.setValue(0);
+				i2.setLeft(ip[1]);
+				i2.setRight(new Id(0));
+			} else if (this.isLeaf == false && (this.left.isLeaf == false || this.left.getValue() == 1) && (this.right.isLeaf == false || this.right.getValue() == 1)) { // id = (i1, i2)
+				i1.setAsNode();
+				i1.setValue(0);
+				i1.setLeft(this.left.clone());
+				i1.setRight(new Id(0));
+
+				i2.setAsNode();
+				i2.setValue(0);
+				i2.setLeft(new Id(0));
+				i2.setRight(this.right.clone());
+			} else {
+				System.out.println("Bug..." + this.toString());
 			}
 		}
-		
-		Pair<Id> pair = new Pair<Id>();
-		pair.setEa(i1);
-		pair.setEb(i2);
- 		return pair;
+
+		Id[] res = new Id[2];
+		res[0] = i1;
+		res[1] = i2;
+		return res;
 	}
-	
-	public void sum(Id i1, Id i2){ // this becomes the sum between i1 and i2
-		
-		this.i1 = new Id();
-		this.i2 = new Id();
-		
-		if(i1.getTipo() == 1 && i1.getN() == 0 && i2.getTipo() == 1 && i2.getN() == 0){
-			this.tipo = 1;
-			this.n = 0;
-		}else if(i1.getTipo() == 1 && i1.getN() == 0 && (i2.getN() == 1 || i2.getTipo() == 2)){ // sum(0, X) -> X;
-			this.tipo = i2.getTipo();
-			this.n = i2.getN();
-			this.i1 = i2.getId1();
-			this.i2 = i2.getId2();
-		}else if((i1.getN() == 1 || i1.getTipo() == 2) && i2.getTipo() == 1 && i2.getN() == 0){ // sum(X, 0) -> X;
-			this.tipo = i1.getTipo();
-			this.n = i1.getN();
-			this.i1 = i1.getId1();
-			this.i2 = i1.getId2();
-		}else if(i1.getTipo() == 2 && i2.getTipo() == 2){ // sum({L1,R1}, {L2, R2}) -> norm_id({sum(L1, L2), sum(R1, R2)}).
-			this.tipo = 2;
-			this.i1.sum(i1.getId1(), i2.getId1());
-			this.i2.sum(i1.getId2(), i2.getId2());
-			this.normalize();
-		}else {
-			System.out.println("fail Id ..."+ i1.getTipo() + " " + i2.getTipo());
-			System.out.println("flail heck ..."+ i1.getN() + " " + i2.getN());
-		}// else do nothing
+
+	public static void sum(Id i1, Id i2) { // this becomes the sum between i1 and i2
+
+		//sum(0, X) -> X;
+		//sum(X, 0) -> X;
+		//sum({L1,R1}, {L2, R2}) -> norm_id({sum(L1, L2), sum(R1, R2)}).
+
+		if (i1.isLeaf && i1.getValue() == 0) {
+			i1.copy(i2);
+		} else if (i2.isLeaf && i2.getValue() == 0) {
+			//i1 is the result
+		} else if (i1.isLeaf == false &&  i2.isLeaf == false) {
+			Id.sum(i1.getLeft(), i2.getLeft());
+			Id.sum(i1.getRight(), i2.getRight());
+			i1.normalize();
+		} else {
+			System.out.println("SUM ID fail ..." + i1.getValue() + " " + i2.getValue());
+		}
 	}
-	
-	public void normalize(){
-		if (this.tipo == 2 && this.i1.getTipo() == 1 && this.i1.getN() == 0 && this.i2.getTipo() == 1 && this.i2.getN() == 0){
-			this.tipo = 1;
-			this.n = 0;
-			this.i1 = this.i2 = null;
-		}else if (this.tipo == 2 && this.i1.getTipo() == 1 && this.i1.getN() == 1 && this.i2.getTipo() == 1 && this.i2.getN() == 1){
-			this.tipo = 1;
-			this.n = 1;
-			this.i1 = this.i2 = null;
+
+	public void normalize() {
+		if (this.isLeaf == false && this.left.isLeaf && this.left.getValue() == 0 && this.right.isLeaf && this.right.getValue() == 0) {
+			this.setAsLeaf();
+			this.value = 0;
+			this.left = this.right = null;
+		} else if (this.isLeaf == false && this.left.isLeaf && this.left.getValue() == 1 && this.right.isLeaf && this.right.getValue() == 1) {
+			this.setAsLeaf();
+			this.value = 1;
+			this.left = this.right = null;
 		}// else do nothing
 	}
 
-	public char[] dEncode(){
+
+	public void copy(Id i) {
+		this.isLeaf = i.isLeaf;
+		this.value = i.getValue();
+		Id el = i.getLeft();
+		Id er = i.getRight();
+		this.left = (el==null) ? null : el;
+		this.right = (er==null) ? null : er;
+	}
+
+
+	public char[] dEncode() {
 		return this.encode(null).unify();
 	}
-	
+
 	// code and decode dos ids
-	public BitArray encode(BitArray bt){
-		if (bt == null){
+	public BitArray encode(BitArray bt) {
+		if (bt == null) {
 			bt = new BitArray();
 		}
-		
-		if ( this.tipo == 1 && this.n == 0 ){//System.out.println("id enc a1");
+
+		if (this.isLeaf && this.value == 0) {//System.out.println("id enc a1");
 			bt.addbits(0, 3);
-		}else if ( this.tipo == 1 && this.n == 1 ){//System.out.println("id enc a2");
+		} else if (this.isLeaf && this.value == 1) {//System.out.println("id enc a2");
 			bt.addbits(0, 2);
-			bt.addbits(1, 1); 
-		}else if (this.tipo == 2 && (this.i1.getTipo() == 1 && this.i1.getN() == 0) && (this.i2.getTipo() == 2 || this.i2.getN() == 1)){//System.out.println("id enc b");
+			bt.addbits(1, 1);
+		} else if (this.isLeaf == false && (this.left.isLeaf && this.left.getValue() == 0) && (this.right.isLeaf == false || this.right.getValue() == 1)) {//System.out.println("id enc b");
 			bt.addbits(1, 2);
-			this.i2.encode(bt);
-		}else if (this.tipo == 2 && (this.i2.getTipo() == 1 && this.i2.getN() == 0) && (this.i1.getTipo() == 2 || this.i1.getN() == 1)){//System.out.println("id enc c");
+			this.right.encode(bt);
+		} else if (this.isLeaf == false && (this.right.isLeaf && this.right.getValue() == 0) && (this.left.isLeaf == false || this.left.getValue() == 1)) {//System.out.println("id enc c");
 			bt.addbits(2, 2);
-			this.i1.encode(bt);
-		}else if (this.tipo == 2 && (this.i2.getTipo() == 2 || this.i2.getN() == 1) && (this.i1.getTipo() == 2 || this.i1.getN() == 1)){//System.out.println("id enc d");
-			bt.addbits(3, 2); 	
-			this.i1.encode(bt);
-			this.i2.encode(bt);
-		}else {
+			this.left.encode(bt);
+		} else if (this.isLeaf == false && (this.right.isLeaf == false || this.right.getValue() == 1) && (this.left.isLeaf == false || this.left.getValue() == 1)) {//System.out.println("id enc d");
+			bt.addbits(3, 2);
+			this.left.encode(bt);
+			this.right.encode(bt);
+		} else {
 			System.out.println("BUG - ENCODE");
-			System.out.println("this tipo " + this.tipo);
-			System.out.println(" i1 tipo " + this.i1.getTipo());
-			System.out.println(" i2 tipo " + this.i2.getTipo());
+			System.out.println("this tipo " + this.isLeaf);
+			System.out.println(" i1 tipo is Leaf?" + this.left.isLeaf);
+			System.out.println(" i2 tipo is Leaf?" + this.right.isLeaf);
 		}
 		//System.out.println(" i2 tipo " + (int)bt.getIndex(0));
 		return bt;
 	}
-	
-	public void decode(BitArray bt){
+
+	public void decode(BitArray bt) {
 		int val = bt.readbits(2);
-		if ( val == 0 ){//System.out.println("Id dec a");
+		if (val == 0) {//System.out.println("Id dec a");
 			int x = bt.readbits(1);//printf("chceck\n");
-			
-			this.tipo = 1;
-			this.n = x;
-		}else if ( val == 1 ){//System.out.println("Id dec b");
-			this.tipo = 2;
-			
-			this.i1 = new Id(0);
-			this.i2 = new Id();
-			this.i2.decode(bt);
-		}else if ( val == 2 ){//System.out.println("Id dec c");
-			this.tipo = 2;
-			
-			this.i1 = new Id();
-			this.i1.decode(bt);
-			this.i2 = new Id(0);
-		}else if ( val == 3 ){//System.out.println("Id dec d");
-			this.tipo = 2;
-			
-			this.i1 = new Id();
-			this.i1.decode(bt);
-			this.i2 = new Id();
-			this.i2.decode(bt);
-		}else{
+
+			this.setAsLeaf();
+			this.value = x;
+		} else if (val == 1) {//System.out.println("Id dec b");
+			this.setAsNode();
+
+			this.left = new Id(0);
+			this.right = new Id();
+			this.right.decode(bt);
+		} else if (val == 2) {//System.out.println("Id dec c");
+			this.setAsNode();
+
+			this.left = new Id();
+			this.left.decode(bt);
+			this.right = new Id(0);
+		} else if (val == 3) {//System.out.println("Id dec d");
+			this.setAsNode();
+
+			this.left = new Id();
+			this.left.decode(bt);
+			this.right = new Id();
+			this.right.decode(bt);
+		} else {
 			System.out.println("BUG - DECODE");
 		}
 	}
-	
-	
+
 	// gets, sets e outros
-	public void setTipo(int v){ this.tipo = v; }
-	public void setN(int v){ this.n = v; }
-	public void setId1(Id ni){ this.i1 = ni; }
-	public void setId2(Id ni){ this.i2 = ni; }
-	
-	public int getTipo(){ return this.tipo; }
-	public int getN(){ return this.n; }
-	public Id getId1(){ 
-		if (this.i1 != null) return this.i1.clone();
-		else return null;
+	public void setAsLeaf() {
+		this.isLeaf = true;
+		this.left = null;
+		this.right = null;
 	}
-	public Id getId2(){
-		if (this.i2 != null) return this.i2.clone();
-		else return null;
+
+	public void setAsNode() {
+		this.isLeaf = false;
+		this.value = -1;
+		this.left = new Id(1);
+		this.right = new Id(0);
 	}
-	
-	public String tostring(){
-		String res = new String();
-		
-		if (this.tipo == 1){
-			res = res + this.n;
-		}else if (this.tipo == 2){
-			res = "("+res + this.i1.tostring() + ", " + this.i2.tostring() +")";
+
+	public void setValue(int v) {
+		this.value = v;
+	}
+
+	public void setLeft(Id ni) {
+		this.left = ni;
+	}
+
+	public void setRight(Id ni) {
+		this.right = ni;
+	}
+
+	public int getValue() {
+		return this.value;
+	}
+
+	public Id getLeft() {
+		if(this.isLeaf) return null;
+		return this.left;
+	}
+
+	public Id getRight() {
+		if(this.isLeaf) return null;
+		return this.right;
+	}
+
+	@Override
+	public String toString() {
+
+		if (this.isLeaf) {
+			return this.value + "";
+		} else {
+			return "(" + this.left.toString() + ", " + this.right.toString() + ")";
 		}
-		
-		return res;
 	}
-	
-	public Id clone(){
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Id i = (Id) obj;
+		if (this.isLeaf && i.isLeaf && this.value == i.getValue()) {
+			return true;
+		}
+		if (this.isLeaf == false && i.isLeaf == false && this.left.equals(i.getLeft()) && this.right.equals(i.getRight())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 79 * hash + (this.isLeaf ? 1 : 0);
+		hash = 79 * hash + this.value;
+		hash = 79 * hash + (this.left != null ? this.left.hashCode() : 0);
+		hash = 79 * hash + (this.right != null ? this.right.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public Id clone() {
 		Id res = new Id();
-		
-		res.setN(this.n);
-		res.setTipo(this.tipo);
-		if ( this.tipo == 2){
-			res.setId1(this.i1.clone());
-			res.setId2(this.i2.clone());
-		}else{
-			res.setId1(this.i1);
-			res.setId2(this.i2);
-		}
-		
-		
+
+		res.isLeaf = this.isLeaf;
+		res.setValue(this.value);
+		Id el = this.getLeft();
+		Id er = this.getRight();
+		res.setLeft((el==null) ? null : el.clone());
+		res.setRight((er==null) ? null : er.clone());
 		return res;
 	}
 }
