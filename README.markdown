@@ -30,6 +30,7 @@ The image shows a run from ITC witch is divided in sections. Each section repres
 The initial Stamp must be initialized as a _seed_, after that, the Stamps are modified according to the operation that has been executed.
 All operations use pointers to Stamps and return an _int_ value as a result for the success of the operations, meaning that the resulting Stamp, or Stamps, are returned by reference.
 
+```C
 	#include "itc.h"
 	
 	int main(){
@@ -59,7 +60,7 @@ All operations use pointers to Stamps and return an _int_ value as a result for 
 	    printStamp(a);
 	    printStamp(c);	
 	}
-
+```
 
 
 ### Sample code JAVA
