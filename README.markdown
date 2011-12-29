@@ -70,7 +70,7 @@ All operations use pointers to Stamps and return an _int_ value as a result for 
 When using objects, in JAVA, every new Stamp is defined as a seed, meaning that there is no need to apply any method in order to create the seed Stamp. 
 There are alternatives (functional style) to these methods, which are defined in the API.
 
-
+```java
 	import itc.*;
 	
 	public class teste2 {
@@ -100,7 +100,7 @@ There are alternatives (functional style) to these methods, which are defined in
 	        System.out.println(c.toString());
 	    }
 	}
-
+```
 
 
 
@@ -133,7 +133,7 @@ ITCs encode the state needed to track causality in a stamp, composed of an event
 
 First replicas need to be created. A seed stamp (with a special id component) is first created and the desired number of replicas can be created by forking this initial seed. Bellow we create 4 replicas (Java objects a,b,c,d - both in imperative and functional style):
 
-
+```java
 	Stamp a = new Stamp(); // Seed
 	Stamp b = a.fork();
 	Stamp c = a.fork();
@@ -141,7 +141,7 @@ First replicas need to be created. A seed stamp (with a special id component) is
 	Stamp[] out = Stamp.fork(c);
 	c = out[0];
 	Stamp d = out[1];
-	
+```
 
 (Notice that any stamp can be forked, here we forked stamp a twice and stamp c once.)
 
@@ -150,36 +150,36 @@ Since no events have been registered, these stamps all compare as equal. Since a
 Now, suppose that stamp b is associated to a ReplicaB and this replica was modified. We
 note this by doing:
 
-
-b.event();
-//or
-b = Stamp.event(b);
-
+```java
+	b.event();
+	//or
+	b = Stamp.event(b);
+```
 
 Now stamp b is greater than all the others. We can do the same in stamp d to denote an update on ReplicaD:
 
-
+```java
 	d = d.event();
 	//or
 	d = Stamp.event(d);
-
+```
 
 These two stamps are now concurrent. Thus b.leq(d) is false and d.leq(b) is also false.
 
 Now suppose that we want to merge the updates in ReplicaB and ReplicaD. One way is to
 create a replica that reflects both updates:
 
-
+```java
 	b.join(d);
 	//or
 	b = Stamp.join(b,d);
-
+```
 
 This stamp e will now have an id that joins the ids in b and d, and has an event component that holds both issued events.  An alternative way, that keeps the number of replicas/stamps and does not form new ids, is to exchange events between both replicas.
 
-
+```java
 	b.join(d.peek());
 	d.join(Stamp.peek(b));
-
+```
 
 Now, stamps b and d are no longer concurrent and will compare as equivalent, since they depict the same events. 
