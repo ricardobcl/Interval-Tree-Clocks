@@ -5,7 +5,15 @@ Classic causality tracking mechanisms, such as version vectors and vector clocks
 
 Interval Tree Clocks (ITC) is a new clock mechanism that can be used in scenarios with a dynamic number of participants, allowing a completely decentralized creation of processes/replicas without need for global identifiers. The mechanism has a variable size representation that adapts automatically to the number of existing entities, growing or shrinking appropriately.
 
-Here we provide reference implementations of ITCs in Java, C and Erlang, and appropriate import and export methods to a common serialized representation. In Sample Run we provide an example on how to use the API in both languages. Further information can be found here and full details in the Conference Paper, published in Opodis 2009.
+Here we provide reference implementations of ITCs in Java, C and Erlang, and
+appropriate import and export methods to a common serialized representation.
+In [Sample Run](https://github.com/ricardobcl/Interval-Tree-Clocks#simple-
+demo-run) we provide an example on how to use the API in both languages.
+Further information can be found [here](https://github.com/ricardobcl
+/Interval-Tree-Clocks#summary-high-level-presentation-of-itcs-and-its-use) and
+full details in the [Conference
+Paper](http://gsd.di.uminho.pt/members/cbm/ps/itc2008.pdf), published in
+Opodis 2009.
 
 
 
@@ -112,7 +120,7 @@ There are alternatives (functional style) to these methods, which are defined in
 
 Interval Tree Clocks can substitute both [Version Vectors](http://en.wikipedia.org/wiki/Version_vector) and [Vector Clocks](http://en.wikipedia.org/wiki/Vector_clock). 
 
-Version Vectors are used to track data dependency among replicas. They are used in replicated file systems (such as [Coda](http://en.wikipedia.org/wiki/Coda_(file_system)) and in Cloud engines (such as [Amazon Dynamo](http://en.wikipedia.org/wiki/Dynamo_(storage_system) and Cassandra). 
+Version Vectors are used to track data dependency among replicas. They are used in replicated file systems (such as [Coda](http://en.wikipedia.org/wiki/Coda_(file_system)) and in Cloud engines (such as Amazon Dynamo and Cassandra). 
 
 Vector Clocks track causality dependency between events in distributed processes. They are used in are used in group communication protocols (such as in the Spread toolkit), in consistent snapshots algorithms, etc.
 
@@ -183,3 +191,15 @@ This stamp e will now have an id that joins the ids in b and d, and has an event
 ```
 
 Now, stamps b and d are no longer concurrent and will compare as equivalent, since they depict the same events. 
+
+# License
+
+This work is licensed under the Lesser General Public License (LGPL), version
+3. See the License for details about distribution rights, and the specific
+rights regarding derivate works.
+
+You may obtain a copy of the License at:
+
+http://choosealicense.com/licenses/lgpl-v3/
+
+http://www.gnu.org/licenses/lgpl.html
