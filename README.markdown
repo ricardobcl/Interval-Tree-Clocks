@@ -9,11 +9,11 @@ Here we provide reference implementations of ITCs in Java, C and Erlang, and
 appropriate import and export methods to a common serialized representation.
 In [Sample Run](https://github.com/ricardobcl/Interval-Tree-Clocks#simple-
 demo-run) we provide an example on how to use the API in both languages.
-Further information can be found [here](https://github.com/ricardobcl
-/Interval-Tree-Clocks#summary-high-level-presentation-of-itcs-and-its-use) and
-full details in the [Conference
-Paper](http://gsd.di.uminho.pt/members/cbm/ps/itc2008.pdf), published in
-Opodis 2009.
+Further information can be found
+[here](https://github.com/ricardobcl/Interval-Tree-Clocks#summary-high-level-presentation-of-itcs-and-its-use)
+and full details in the
+[Conference Paper](http://gsd.di.uminho.pt/members/cbm/ps/itc2008.pdf),
+published in Opodis 2009.
 
 
 
