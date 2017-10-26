@@ -7,8 +7,8 @@ Interval Tree Clocks (ITC) is a new clock mechanism that can be used in scenario
 
 Here we provide reference implementations of ITCs in Java, C and Erlang, and
 appropriate import and export methods to a common serialized representation.
-In [Sample Run](https://github.com/ricardobcl/Interval-Tree-Clocks#simple-
-demo-run) we provide an example on how to use the API in both languages.
+In [Sample Run](https://github.com/ricardobcl/Interval-Tree-Clocks#simple-demo-run) 
+we provide an example on how to use the API in both languages.
 Further information can be found
 [here](https://github.com/ricardobcl/Interval-Tree-Clocks#summary-high-level-presentation-of-itcs-and-its-use)
 and full details in the
@@ -35,7 +35,7 @@ The image shows a run from ITC which is divided in sections. Each section repres
 ### Sample code C
 
 
-The initial Stamp must be initialized as a _seed_, after that, the Stamps are modified according to the operation that has been executed.
+The initial Stamp must be initialized as a _seed_. After that, the Stamps are modified according to the operation that has been executed.
 All operations use pointers to Stamps and return an _int_ value as a result for the success of the operations, meaning that the resulting Stamp, or Stamps, are returned by reference.
 
 ```C
@@ -120,9 +120,9 @@ There are alternatives (functional style) to these methods, which are defined in
 
 Interval Tree Clocks can substitute both [Version Vectors](http://en.wikipedia.org/wiki/Version_vector) and [Vector Clocks](http://en.wikipedia.org/wiki/Vector_clock). 
 
-Version Vectors are used to track data dependency among replicas. They are used in replicated file systems (such as [Coda](http://en.wikipedia.org/wiki/Coda_(file_system)) and in Cloud engines (such as Amazon Dynamo and Cassandra). 
+Version Vectors are used to track data dependency among replicas. They are used in replicated file systems (such as [Coda](http://en.wikipedia.org/wiki/Coda_(file_system))) and in Cloud engines (such as Amazon Dynamo and Cassandra). 
 
-Vector Clocks track causality dependency between events in distributed processes. They are used in are used in group communication protocols (such as in the Spread toolkit), in consistent snapshots algorithms, etc.
+Vector Clocks track causality dependency between events in distributed processes. They are used in group communication protocols (such as in the Spread toolkit), in consistent snapshots algorithms, etc.
 
 ITCs can be used in all these settings and will excel in dynamic settings, i.e. whenever the number and set of active entities varies during the system execution, since it allows localized introduction and removal of entities. 
 Before ITCs, the typical strategy to address these dynamic settings was to implement the classical vectors as mappings from a globally unique id to an integer counter. The drawback is that unique ids are not space efficient and that if the active entities change over time (under churn) the state dedicated to the mapping will keep growing. This has lead to ad-hoc pruning solutions (e.g. in Dynamo) that can introduce errors and compromise causality tracking. 
@@ -139,7 +139,7 @@ ITCs encode the state needed to track causality in a stamp, composed of an event
 
 ### Simulating Version Vectors
 
-First replicas need to be created. A seed stamp (with a special id component) is first created and the desired number of replicas can be created by forking this initial seed. Bellow we create 4 replicas (Java objects a,b,c,d - both in imperative and functional style):
+First, replicas need to be created. A seed stamp (with a special id component) is first created and the desired number of replicas can be created by forking this initial seed. Bellow we create 4 replicas (Java objects `a`,`b`,`c`,`d` - both in imperative and functional style):
 
 ```java
 	Stamp a = new Stamp(); // Seed
@@ -151,11 +151,11 @@ First replicas need to be created. A seed stamp (with a special id component) is
 	Stamp d = out[1];
 ```
 
-(Notice that any stamp can be forked, here we forked stamp a twice and stamp c once.)
+(Notice that any stamp can be forked, here we forked stamp `a` twice and stamp `c` once.)
 
 Since no events have been registered, these stamps all compare as equal. Since a stamp method leq (_less or equal_) is provided, stamps x and y are equivalent when both x.leq(y) and y.leq(x) are true.
 
-Now, suppose that stamp b is associated to a ReplicaB and this replica was modified. We
+Now, suppose that stamp `b` is associated to a ReplicaB and this replica was modified. We
 note this by doing:
 
 ```java
@@ -164,7 +164,7 @@ note this by doing:
 	b = Stamp.event(b);
 ```
 
-Now stamp b is greater than all the others. We can do the same in stamp d to denote an update on ReplicaD:
+Now stamp `b` is greater than all the others. We can do the same in stamp `d` to denote an update on ReplicaD:
 
 ```java
 	d = d.event();
@@ -180,17 +180,17 @@ create a replica that reflects both updates:
 ```java
 	b.join(d);
 	//or
-	b = Stamp.join(b,d);
+	e = Stamp.join(b,d);
 ```
 
-This stamp e will now have an id that joins the ids in b and d, and has an event component that holds both issued events.  An alternative way, that keeps the number of replicas/stamps and does not form new ids, is to exchange events between both replicas.
+This stamp `e` will now have an id that joins the ids in `b` and `d`, and has an event component that holds both issued events.  An alternative way, that keeps the number of replicas/stamps and does not form new ids, is to exchange events between both replicas.
 
 ```java
 	b.join(d.peek());
 	d.join(Stamp.peek(b));
 ```
 
-Now, stamps b and d are no longer concurrent and will compare as equivalent, since they depict the same events. 
+Now, stamps `b` and `d` are no longer concurrent and will compare as equivalent, since they depict the same events. 
 
 # License
 
