@@ -24,7 +24,7 @@ fork({I, E}) ->
 {I1, I2} = split(I),
 {{I1, E}, {I2, E}}.
 
-peek({I, E}) -> {{0, E}, {I, E}}.
+peek({_I, E}) -> {0, E}.
 
 event({I, E}) ->
 {I,
